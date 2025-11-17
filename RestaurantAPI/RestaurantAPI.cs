@@ -28,7 +28,7 @@ public class RestaurantAPI
 
     public async Task<ResponseModel<GetMenuResponse>> GetMenuAsync(bool withPrice = true)
     {
-        return HandleHttpResponse<GetMenuResponse>(await SendRequestAsync("restaurant", Post, JsonConvert.SerializeObject(new RequestModel<GetMenuParamenters>()
+        return HandleHttpResponse<GetMenuResponse>(await SendRequestAsync(JsonConvert.SerializeObject(new RequestModel<GetMenuParamenters>()
         {
             Command = "GetMenu",
             CommandParamenters = new()
@@ -40,7 +40,7 @@ public class RestaurantAPI
 
     public async Task<ResponseModel> SendOrderAsync(string orderId, List<CartItem> cart)
     {
-        return HandleHttpResponse(await SendRequestAsync("restaurant", Post, JsonConvert.SerializeObject(new RequestModel<SendOrderParamenters>()
+        return HandleHttpResponse(await SendRequestAsync(JsonConvert.SerializeObject(new RequestModel<SendOrderParamenters>()
         {
             Command = "SendOrder",
             CommandParamenters = new()
@@ -51,14 +51,14 @@ public class RestaurantAPI
         })));
     }
 
-    private async Task<ApiResponse> SendRequestAsync(string endpoint, HttpMethod method, string data)
+    private async Task<ApiResponse> SendRequestAsync(string data)
     {
         try
         {
-            using var request = new HttpRequestMessage(method, endpoint);
+            using var request = new HttpRequestMessage(Post, "");
 
             using var content = new StringContent(data, Encoding.UTF8, "application/json");
-            if (method == Post || method == Put) request.Content = content;
+            request.Content = content;
 
             using var response = await client.SendAsync(request);
             var str = await response.Content.ReadAsStringAsync();
